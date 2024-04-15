@@ -11,7 +11,7 @@ function App() {
   const webSocket = useRef(null);
 
   useEffect(() => {
-    webSocket.current = new WebSocket('ws://localhost:8080');
+    webSocket.current = new WebSocket('ws://127.0.0.1:8080/ws');
 
     webSocket.current.onopen = () => {
       console.log("WS 연결됨");
@@ -22,7 +22,7 @@ function App() {
     };
 
     webSocket.current.onerror = (error) => {
-      console.log(error);
+      console.log(error.code, error.message);
     };
 
     webSocket.current.onmessage = (event) => {
