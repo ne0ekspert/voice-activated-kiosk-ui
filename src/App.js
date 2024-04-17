@@ -4,6 +4,12 @@ import * as pages from "./pages";
 
 import "./App.css";
 
+const products = [
+    {name: '신라면', price: 1500, image: null},
+    {name: '진라면', price: 1500, image: null},
+    {name: '육개장', price: 1500, image: null}
+];
+
 function App() {
   const [ message, setMessage ] = useState("");
   const [ list, setList ] = useState([]);
@@ -11,7 +17,7 @@ function App() {
   const webSocket = useRef(null);
 
   useEffect(() => {
-    webSocket.current = new WebSocket('ws://127.0.0.1:8080/ws');
+    webSocket.current = new WebSocket(`ws://${window.location.host}/ws`);
 
     webSocket.current.onopen = () => {
       console.log("WS 연결됨");
@@ -27,6 +33,13 @@ function App() {
 
     webSocket.current.onmessage = (event) => {
       console.log(event);
+      let m = event.data;
+      let ans = "";
+      
+      if (m.includes('## 대답')) {
+        ans = m.split("## 대답")[1].strip();
+        setMessage(ans);
+      }
     };
 
     return () => {
@@ -40,11 +53,15 @@ function App() {
 
   return (
     <div className="w-screen h-screen">
+      <div>
+        {message}
+      </div>
+
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<pages.Home />} />
-          <Route exact path="/order" element={<pages.Order addItem={addItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment />} list={list} />
+          <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} list={list} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} list={list}/>} />
         </Routes>
       </BrowserRouter>
     </div>
