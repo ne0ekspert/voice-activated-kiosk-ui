@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 
 function Item({ item, addItem }) {
     return (
-        <div className="border border-black rounded-md p-6 flex flex-col h-1/4 justify-center" onClick={() => addItem({name: item.name, count: 1})}>
+        <div className="border border-black rounded-md p-24 flex flex-col h-3 justify-center" onClick={() => addItem({name: item.name, count: 1})}>
             <img src={item.image} alt="product"/>
-            <div className="flex flex-col">
-                <span>{item.name}</span>
+            <div>
+                
+                <span>{item.name} </span>
                 <span>{item.price}원</span>
             </div>
             <div className="grow"></div>
