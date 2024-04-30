@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import * as pages from "./pages";
+import { v4 } from "uuid";
 
 import "./App.css";
 
@@ -48,20 +49,31 @@ function App() {
   }, []);
 
   function addItem(obj) {
+    obj.id = v4();
+
     setList((prev) => [...prev, obj]);
+  }
+
+  function updateItem(id, obj) {
+    let updatedData = [...list];
+
+    list.forEach((v, i) => {
+      if (v.id === id) updatedData[i] = { ...updatedData[i], ...obj };
+      setList(updatedData);
+    });
   }
 
   return (
     <div className="w-screen h-screen">
-      <div>
+      <div className="fixed w-full">
         {message}
       </div>
 
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<pages.Home />} />
-          <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment products={products} list={list}/>} />
+          <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} list={list} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} updateItem={updateItem} list={list}/>} />
         </Routes>
       </BrowserRouter>
     </div>
