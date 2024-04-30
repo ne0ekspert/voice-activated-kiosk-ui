@@ -1,3 +1,5 @@
+import { CiCreditCard1, CiMoneyBill } from "react-icons/ci"; 
+
 function Item({v}) {
     return (
         <div className="flex border">
@@ -7,21 +9,42 @@ function Item({v}) {
     )
 }
 
-function Payment({ list }) {
+function Payment({ list, products, updateItem }) {
     return (
-        <div className="flex flex-col h-screen">
-            <div className="border-b-2 border-b-black flex flex-col ">
-                <span className="text-5xl font-bold mb-3">주문내역</span>
-                <span className="text-xl mb-3">대충 글 넣으시오</span>
-            </div>
-            <div className="grow">
-                {list?.map((v, i) => (
-                    <Item info={v} />
-                ))}
-            </div>
-            <div>
-                <span className="text-xl mr-2">총액</span>
-                <span className="text-3xl font-bold">{list?.reduce((a, b) => a.price * a.count + b.price * b.count) ?? 0}</span>
+        <div className='flex flex-row w-full h-full'>
+            <table className="w-1/2">
+                <thead>
+                    <tr>
+                        <th>상품명</th>
+                        <th>수량</th>
+                        <th>금액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        list.map((v, i) => 
+                            <tr className="h-12">
+                                <td className="h-12">{v.name}</td>
+                                <td className="h-12">{v.count}</td>
+                                <td className="h-12">{products.filter((p) => p.name === v.name)[0].price * v.count}</td>
+                            </tr>
+                        )
+                    }
+                </tbody>
+            </table>
+            <div className="bg-slate-800 text-white flex flex-col w-1/2 h-screen">
+                <h1 className="mt-20 ml-auto mr-auto text-4xl">결제방식을 선택해주세요</h1>
+
+                <div className="mt-32 mr-auto ml-auto">
+                    <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6">
+                        <CiCreditCard1 className="ml-auto mr-auto" size={72} />
+                        카드결제
+                    </button>
+                    <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6">
+                        <CiMoneyBill className="ml-auto mr-auto" size={72} />
+                        현금결제
+                    </button>
+                </div>
             </div>
         </div>
     );
