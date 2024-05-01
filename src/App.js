@@ -15,38 +15,91 @@ import 참치 from "./res/cca.jpg";
 import 스팸 from "./res/sp.jpg";
 
 const products = [
-    {name: '라면', price: 3000, image: 라면},
-    {name: '떡라면', price: 3500, image: 떡라면},
+    {name: '라면', price: 2500, image: 라면},
+    {name: '떡라면', price: 3000, image: 떡라면},
     {name: '만두라면', price: 3500, image: 만두},
     {name: '고기라면', price: 4000, image: 고기},
     {name: '김밥', price: 1500, image: 김밥},
-    {name: '돈까스김밥', price: 2500, image: 돈까스},
+    {name: '돈까스김밥', price: 3000, image: 돈까스},
     {name: '참치김밥', price: 2500, image: 참치},
-    {name: '스팸김밥', price: 3000, image: 스팸},
+    {name: '스팸김밥', price: 3500, image: 스팸},
 ];
 
 function App() {
   const [ message, setMessage ] = useState("");
   const [ list, setList ] = useState([]);
 
-  const webSocket = useRef(null);
+  const ws_voice = useRef(null);
+  const ws_product = useRef(null);
+  const ws_nfc = useRef(null);
 
   useEffect(() => {
-    webSocket.current = new WebSocket(`ws://${window.location.host}/ws`);
-
-    webSocket.current.onopen = () => {
-      console.log("WS 연결됨");
+    ws_nfc.current = new WebSocket(`ws://${window.location.host}/ws/nfc`);
+    
+    ws_nfc.current.onopen = () => {
+      console.log("NFC ws ready");
+      ws_nfc.current.send('connected');
     };
 
-    webSocket.current.onclose = () => {
-      console.log("WS 닫힘");
+    ws_nfc.current.onclose = () => {
+      console.log("NFC ws closed");
     };
 
-    webSocket.current.onerror = (error) => {
+    ws_nfc.current.onerror = (error) => {
       console.log(error.code, error.message);
     };
 
-    webSocket.current.onmessage = (event) => {
+    ws_nfc.current.onmessage = (event) => {
+      console.log(event);
+    };
+
+    return () => {
+      ws_nfc.current?.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    ws_product.current = new WebSocket(`ws://${window.location.host}/ws/prod`);
+    
+    ws_product.current.onopen = () => {
+      console.log("Product ws ready");
+      ws_product.current.send('connected');
+    };
+
+    ws_product.current.onclose = () => {
+      console.log("Product ws closed");
+    };
+
+    ws_product.current.onerror = (error) => {
+      console.log(error.code, error.message);
+    };
+
+    ws_product.current.onmessage = (event) => {
+      console.log(event);
+    };
+
+    return () => {
+      ws_product.current?.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    ws_voice.current = new WebSocket(`ws://${window.location.host}/ws/voice`);
+
+    ws_voice.current.onopen = () => {
+      console.log("Voice ws ready");
+      ws_voice.current.send('connected');
+    };
+
+    ws_voice.current.onclose = () => {
+      console.log("WS 닫힘");
+    };
+
+    ws_voice.current.onerror = (error) => {
+      console.log(error.code, error.message);
+    };
+
+    ws_voice.current.onmessage = (event) => {
       console.log(event);
       let m = event.data;
       let ans = "";
@@ -58,7 +111,7 @@ function App() {
     };
 
     return () => {
-      webSocket.current?.close();
+      ws_voice.current?.close();
     };
   }, []);
 
