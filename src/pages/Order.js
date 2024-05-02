@@ -12,7 +12,7 @@ function Item({ item, addItem }) {
     );
 }
 
-function CartItem({ item, products, updateItem }) {
+function CartItem({ item, products, updateItem, removeItem }) {
     const product = products.filter((v) => item.name === v.name)[0];
 
     function increase() {
@@ -27,7 +27,7 @@ function CartItem({ item, products, updateItem }) {
     }
 
     return (
-        <div className="w-56 h-56 p-6">
+        <div className="w-56 h-56 p-6 aspect-square">
             <div className="flex flex-col bg-white h-full w-full text-black p-3">
                 <div className="flex flex-row justify-between text-lg">
                     <span>{product.name}</span>
@@ -39,7 +39,7 @@ function CartItem({ item, products, updateItem }) {
                     <div className="h-8 w-8 cursor-pointer" onClick={increase}>+</div>
                 </div>
                 <div className="grow"></div>
-                <button className="text-red-600">주문 취소</button>
+                <button className="text-red-600" onClick={() => removeItem(item.id)}>주문 취소</button>
             </div>
         </div>
     );
@@ -61,10 +61,10 @@ function Order(props) {
             <div className="fixed bottom-0 bg-slate-800 text-white h-1/4 flex flex-row w-screen">
                 <div className="flex flex-row overflow-x-scroll overflow-y-hidden grow">
                     {props.list.length === 0 ?
-                    (<span>장바구니에 음식을 추가해주세요</span>)
-                    : props.list.map((v, i) => (
-                        <CartItem item={v} key={i} products={props.products} updateItem={props.updateItem} />
-                    ))}
+                    (<span className="m-auto text-5xl font-bold opacity-30">장바구니에 음식을 추가해주세요</span>)
+                    : props.list.map((v, i) => 
+                        <CartItem item={v} key={i} products={props.products} updateItem={props.updateItem} removeItem={props.removeItem} />
+                    )}
                 </div>
                 <Link to='/payment'>
                     <div className="flex flex-col justify-center aspect-square h-full text-center">

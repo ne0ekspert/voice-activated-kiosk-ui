@@ -130,6 +130,10 @@ function App() {
     });
   }
 
+  function removeItem(id) {
+    setList((prev) => prev.filter((v) => v.id !== id))
+  }
+
   return (
     <div className="w-screen h-screen">
       <div className="fixed w-full">
@@ -139,8 +143,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<pages.Home />} />
-          <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment products={products} updateItem={updateItem} list={list}/>} />
+          <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} removeItem={removeItem} list={list} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} updateItem={updateItem} removeItem={removeItem} list={list} />} />
         </Routes>
       </BrowserRouter>
     </div>
