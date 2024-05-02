@@ -6,7 +6,7 @@ function Home() {
         <Link to="/order">
             <div className="flex w-full h-full">
                 <div className="w-3/4 overflow-hidden">
-                    <img src={logo} alt="logo" className="h-full" />
+                    <img src={logo} alt="logo" className="h-full object-cover" />
                 </div>
                 <div className="w-1/4 h-full text-4xl font-bold flex justify-center align-bottom items-end pb-64">
                     <span className="bg-yellow-300 rounded-full p-3 pl-7 pr-7">화면을 터치해 주세요</span>
