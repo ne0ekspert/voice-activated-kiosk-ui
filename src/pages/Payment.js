@@ -1,14 +1,5 @@
 import { CiCreditCard1, CiMoneyBill } from "react-icons/ci"; 
 
-function Item({v}) {
-    return (
-        <div className="flex border">
-            <span>{v.name}</span>
-            <span>{v.price}</span>
-        </div>
-    )
-}
-
 function Payment({ list, products, updateItem }) {
     return (
         <div className='flex flex-row w-full h-full'>
@@ -23,13 +14,14 @@ function Payment({ list, products, updateItem }) {
                 <tbody>
                     {
                         list.map((v, i) => 
-                            <tr className="h-12">
-                                <td className="h-12">{v.name}</td>
-                                <td className="h-12">{v.count}</td>
-                                <td className="h-12">{products.filter((p) => p.name === v.name)[0].price * v.count}</td>
+                            <tr className="h-3">
+                                <td>{v.name}</td>
+                                <td>{v.count}</td>
+                                <td>{products.filter((p) => p.name === v.name)[0].price * v.count}</td>
                             </tr>
                         )
                     }
+                    <div className="grow"></div>
                 </tbody>
             </table>
             <div className="bg-slate-800 text-white flex flex-col w-1/2 h-screen">
