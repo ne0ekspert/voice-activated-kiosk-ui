@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { IoArrowForwardOutline } from "react-icons/io5";
+import { useEffect, useState } from "react";
 
 function Item({ item, addItem }) {
     return (
@@ -46,6 +48,19 @@ function CartItem({ item, products, updateItem, removeItem }) {
 }
 
 function Order(props) {
+    const [ total, setTotal ] = useState(0);
+
+    useEffect(() => {
+        let t = 0;
+
+        props.list.forEach((v) => {
+            const product = props.products.filter((p) => v.name === p.name)[0];
+            t += product.price * v.count;
+        });
+
+        setTotal(t);
+    }, [props.list, props.products]);
+
     return (
         <div className='flex flex-col w-full h-full'>
             <nav className="w-full flex flex-col justify-center bg-slate-600 text-white">
@@ -67,10 +82,13 @@ function Order(props) {
                     )}
                 </div>
                 <Link to='/payment'>
-                    <div className="flex flex-col justify-center aspect-square h-full text-center">
-                        <button className="bg-white h-full">
-                            <h1 className="text-slate-800 text-3xl font-bold">결제하기</h1>
-                            <span className="text-slate-800 text-3xl">(화살표 아이콘)</span>
+                    <div className="flex flex-col justify-center aspect-square h-full">
+                        <button className="flex flex-col items-center justify-center bg-white h-full text-slate-800 text-4xl font-bold">
+                            <h1>{total}원</h1>
+                            <div className="flex flex-row justify-center">
+                                <h1>결제하기</h1>
+                                <IoArrowForwardOutline />
+                            </div>
                         </button>
                     </div>
                 </Link>
