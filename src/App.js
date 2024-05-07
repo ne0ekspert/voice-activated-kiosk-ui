@@ -27,6 +27,7 @@ const products = [
 
 function App() {
   const [ message, setMessage ] = useState("");
+  const [ wsState, setWsState ] = useState({nfc: false, voice: false, product: false});
   const [ list, setList ] = useState([]);
 
   const ws_voice = useRef(null);
@@ -39,10 +40,14 @@ function App() {
     ws_nfc.current.onopen = () => {
       console.log("NFC ws ready");
       ws_nfc.current.send('connected');
+
+      setWsState((prev) => ({...prev, nfc: true}));
     };
 
     ws_nfc.current.onclose = () => {
       console.log("NFC ws closed");
+
+      setWsState((prev) => ({...prev, nfc: false}));
     };
 
     ws_nfc.current.onerror = (error) => {
@@ -64,10 +69,14 @@ function App() {
     ws_product.current.onopen = () => {
       console.log("Product ws ready");
       ws_product.current.send('connected');
+
+      setWsState((prev) => ({...prev, product: true}));
     };
 
     ws_product.current.onclose = () => {
       console.log("Product ws closed");
+
+      setWsState((prev) => ({...prev, product: false}));
     };
 
     ws_product.current.onerror = (error) => {
@@ -89,10 +98,14 @@ function App() {
     ws_voice.current.onopen = () => {
       console.log("Voice ws ready");
       ws_voice.current.send('connected');
+
+      setWsState((prev) => ({...prev, voice: true}));
     };
 
     ws_voice.current.onclose = () => {
       console.log("WS 닫힘");
+
+      setWsState((prev) => ({...prev, voice: false}));
     };
 
     ws_voice.current.onerror = (error) => {
@@ -139,6 +152,18 @@ function App() {
       <div className="fixed w-full">
         {message}
       </div>
+
+      { !(wsState.nfc && wsState.product && wsState.voice ) &&
+        <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex text-white">
+          <table className="w-full h-16">
+            <tbody>
+              <tr><th>NFC 상태</th><td>{wsState.nfc ? 'SUCCESS' : 'FAILED'}</td></tr>
+              <tr><th>품목 상태</th><td>{wsState.product ? 'SUCCESS' : 'FAILED'}</td></tr>
+              <tr><th>음성 인식</th><td>{wsState.voice ? 'SUCCESS' : 'FAILED'}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      }
 
       <BrowserRouter>
         <Routes>
