@@ -30,6 +30,8 @@ function App() {
   const [ wsState, setWsState ] = useState({nfc: false, voice: false, product: false});
   const [ list, setList ] = useState([]);
 
+  const messageBox = useRef(null);
+
   const ws_voice = useRef(null);
   const ws_product = useRef(null);
   const ws_nfc = useRef(null);
@@ -64,11 +66,16 @@ function App() {
   }, []);
 
   useEffect(() => {
+    ws_product.current?.send('cart:'+JSON.stringify(list));
+    console.log("Cart data sent");
+  }, [list]);
+
+  useEffect(() => {
     ws_product.current = new WebSocket(`ws://${window.location.host}/ws/prod`);
     
     ws_product.current.onopen = () => {
       console.log("Product ws ready");
-      ws_product.current.send('connected');
+      ws_product.current.send('prod:'+JSON.stringify(products));
 
       setWsState((prev) => ({...prev, product: true}));
     };
@@ -93,6 +100,18 @@ function App() {
   }, []);
 
   useEffect(() => {
+    function findItems(text) {
+      const regex = /<(.+?)>/gi; // Same regex as before
+      const textElements = [];
+      let match;
+
+      while ((match = regex.exec(text)) !== null) {
+        textElements.push(match[1]);
+      }
+
+      return textElements;
+    }
+
     ws_voice.current = new WebSocket(`ws://${window.location.host}/ws/voice`);
 
     ws_voice.current.onopen = () => {
@@ -115,11 +134,36 @@ function App() {
     ws_voice.current.onmessage = (event) => {
       console.log(event);
       let m = event.data;
-      let ans = "";
       
-      if (m.includes('## 대답')) {
-        ans = m.split("## 대답")[1].strip();
+      if (m.startsWith('INPUT:')) {
+        setMessage(m.slice(6));
+      } else if (m.startsWith('RES:')) {
+        const text = m.slice(4);
+        const items = findItems(text);
+
+        let ans = "";
+
+        if (text.includes('## 대답')) {
+          ans = text.split('## 대답')[1].trim();
+        }
+
+        console.log(ans);
+        console.log(items);
+
         setMessage(ans);
+
+        items.forEach((v) => {
+          if (v.startsWith('!')) {
+            console.log(v.slice(1));
+            removeItem(v.slice(1));
+          } else {
+            const [name, count] = v.split(':');
+
+            addItem({name: name, count: count});
+          }
+        });
+      } else if (m === "***") {
+        setMessage("");
       }
     };
 
@@ -149,7 +193,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen">
-      <div className="fixed w-full">
+      <div className="fixed w-screen h-5 bg-white text-blue-800 transition" ref={messageBox}>
         {message}
       </div>
 
