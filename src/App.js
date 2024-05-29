@@ -25,12 +25,46 @@ const products = [
     {name: '스팸김밥', price: 3500, image: 스팸},
 ];
 
+function VoiceIndecator({ message }) {
+  const constant_style = "transition h-12 w-screen fixed flex items-center pl-4 font-bold ";
+  let style = "";
+
+  console.log(message);
+
+  if (message === "!!!") {
+    message = "지금 말하세요";
+    style = "bg-white text-cyan-800";
+  } else if (message === "...") {
+    message = "대답 준비중...";
+    style = "bg-cyan-800 text-white";
+  } else if (message === "???") {
+    message = "음성을 인식하지 못했습니다.";
+    style = "bg-red-800 text-white";
+  } else if (message.startsWith('INPUT:')) {
+    message = message.slice(6);
+    style = "bg-white text-cyan-800";
+  } else if (message.startsWith('RES:')) {
+    if (message.includes('## 대답')) {
+      message = message.split('## 대답')[1].trim();
+    } else {
+      message = "";
+    }
+    style = "bg-cyan-800 text-white";
+  }
+
+  style = constant_style + style;
+
+  return (
+    <div className={style}>
+      {message}
+    </div>
+  );
+}
+
 function App() {
   const [ message, setMessage ] = useState("");
   const [ wsState, setWsState ] = useState({nfc: false, voice: false, product: false});
   const [ list, setList ] = useState([]);
-
-  const messageBox = useRef(null);
 
   const ws_voice = useRef(null);
   const ws_product = useRef(null);
@@ -130,27 +164,18 @@ function App() {
     ws_voice.current.onerror = (error) => {
       console.log(error.code, error.message);
     };
-
+    
     ws_voice.current.onmessage = (event) => {
       console.log(event);
       let m = event.data;
       
-      if (m.startsWith('INPUT:')) {
-        setMessage(m.slice(6));
-      } else if (m.startsWith('RES:')) {
+      setMessage(m);
+
+      if (m.startsWith('RES:')) {
         const text = m.slice(4);
         const items = findItems(text);
 
-        let ans = "";
-
-        if (text.includes('## 대답')) {
-          ans = text.split('## 대답')[1].trim();
-        }
-
-        console.log(ans);
         console.log(items);
-
-        setMessage(ans);
 
         items.forEach((v) => {
           if (v.startsWith('!')) {
@@ -162,8 +187,6 @@ function App() {
             addItem({name: name, count: count});
           }
         });
-      } else if (m === "***") {
-        setMessage("");
       }
     };
 
@@ -193,9 +216,7 @@ function App() {
 
   return (
     <div className="w-screen h-screen">
-      <div className="fixed w-screen h-5 bg-white text-blue-800 transition" ref={messageBox}>
-        {message}
-      </div>
+      <VoiceIndecator message={message} />
 
       { !(wsState.nfc && wsState.product && wsState.voice ) &&
         <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex text-white">
