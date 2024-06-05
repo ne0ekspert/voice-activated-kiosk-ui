@@ -63,11 +63,7 @@ function Order(props) {
 
     return (
         <div className='flex flex-col w-full h-full'>
-            <nav className="w-full flex flex-col justify-center bg-slate-600 text-white">
-                <button className="transition mr-10">탭 1</button>
-                <button className="transition mr-10">탭 2</button>
-            </nav>
-            <div className="h-3/4 grid grid-cols-4 gap-4 p-8 mb-80">
+            <div className="h-3/4 grid grid-cols-4 gap-4 p-8 mb-80 pt-12">
                 {
                     props.products.map((v, i) => <Item item={v} key={i} addItem={props.addItem} />)
                 }
