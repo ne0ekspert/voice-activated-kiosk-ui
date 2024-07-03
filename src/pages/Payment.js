@@ -1,18 +1,41 @@
-import { useEffect, useState } from "react";
-import { CiCreditCard1, CiMoneyBill } from "react-icons/ci"; 
+import { useEffect, useState, useRef } from "react";
+import { FaCreditCard, FaMoneyBillAlt } from "react-icons/fa"; 
+import { motion } from "framer-motion";
 
-function PaymentOverlay({ method, setPaymentMethod, ws }) {
+function PaymentOverlay({ method, setPaymentMethod, reset }) {
     const [ cardData, setCardData ] = useState("");
 
-    ws.current.onmessage = (message) => {
-        setCardData(message);
-        console.log(message);
-    }
+    const ws_nfc = useRef();
+
+    useEffect(() => {
+        ws_nfc.current = new WebSocket(`ws://${window.location.host}/ws/nfc`);
+        
+        ws_nfc.current.onopen = () => {
+            console.log("NFC ws ready");
+        };
+
+        ws_nfc.current.onclose = () => {
+            console.log("NFC ws closed");
+        };
+
+        ws_nfc.current.onerror = (error) => {
+            console.error(error.code, error.message);
+        };
+
+        ws_nfc.current.onmessage = (data) => {
+            console.log(data);
+            setCardData(data);
+        };
+
+        return () => {
+            ws_nfc.current?.close();
+        };
+    }, []);
 
     switch (method) {
         case "card":
             return (
-                <div className="fixed flex h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
+                <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
                     <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
                         <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이</nav>
                         <div className="w-full text-xl">
@@ -29,7 +52,7 @@ function PaymentOverlay({ method, setPaymentMethod, ws }) {
             );
         case "cash":
             return (
-                <div className="fixed flex h-screen w-screen bg-opacity-80 bg-black  items-center justify-center">
+                <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
                     <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
                         <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이</nav>
                         <div className="w-full text-xl">
@@ -37,7 +60,7 @@ function PaymentOverlay({ method, setPaymentMethod, ws }) {
                         </div>
                         <div className="grow"></div>
                         <div className="w-full flex justify-end">
-                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={() => setPaymentMethod('')}>
+                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
                                 확인
                             </button>
                         </div>
@@ -53,7 +76,7 @@ function PaymentOverlay({ method, setPaymentMethod, ws }) {
     }
 }
 
-function Payment({ list, products, removeItem, ws_nfc }) {
+function Payment({ list, products, removeItem, ws_nfc, reset }) {
     const [ totalPrice, setTotalPrice ] = useState(0);
     const [ paymentMethod, setPaymentMethod ] = useState("");
 
@@ -70,10 +93,10 @@ function Payment({ list, products, removeItem, ws_nfc }) {
     }, [list, products]);
 
     return (
-        <div className='flex flex-row w-full'>
+        <motion.div className='flex flex-row w-full pt-8'>
             <div className="flex flex-col w-1/2 p-8">
                 <h1 className="text-4xl">주문표</h1>
-                <table className="w-full h-full text-xl">
+                <table className="w-full h-5/6 text-xl">
                     <thead>
                         <tr>
                             <th>상품명</th>
@@ -98,7 +121,7 @@ function Payment({ list, products, removeItem, ws_nfc }) {
                             <td colSpan={2} className="font-bold text-left pl-32">
                                 최종 가격
                             </td>
-                            <td>{totalPrice}</td>
+                            <td>{totalPrice.toLocaleString()}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -109,19 +132,19 @@ function Payment({ list, products, removeItem, ws_nfc }) {
                 <div className="mt-32 mr-auto ml-auto">
                     <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6"
                             onClick={() => setPaymentMethod("card")}>
-                        <CiCreditCard1 className="ml-auto mr-auto" size={72} />
+                        <FaCreditCard className="ml-auto mr-auto" size={72} />
                         카드결제
                     </button>
                     <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6"
                             onClick={() => setPaymentMethod("cash")}>
-                        <CiMoneyBill className="ml-auto mr-auto" size={72} />
+                        <FaMoneyBillAlt className="ml-auto mr-auto" size={72} />
                         현금결제
                     </button>
                 </div>
             </div>
 
-            <PaymentOverlay method={paymentMethod} setPaymentMethod={setPaymentMethod} ws={ws_nfc} />
-        </div>
+            <PaymentOverlay method={paymentMethod} setPaymentMethod={setPaymentMethod} ws={ws_nfc} reset={reset} />
+        </motion.div>
     );
 }
 
