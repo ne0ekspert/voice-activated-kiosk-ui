@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { AnimatePresence } from 'framer-motion';
 import * as pages from "./pages";
 import { v4 } from "uuid";
+import { FiAlertCircle } from "react-icons/fi";
 
 import "./App.css";
 
 import 라면 from "./res/ft.jpg";
-import 떡라면 from "./res/gf.jpg";
+import 치즈 from "./res/gf.jpg";
 import 만두 from "./res/sd.jpg";
 import 고기 from "./res/rrr.jpg";
 import 김밥 from "./res/dt.jpg";
@@ -16,7 +18,7 @@ import 스팸 from "./res/sp.jpg";
 
 const products = [
     {name: '라면', price: 2500, image: 라면},
-    {name: '떡라면', price: 3000, image: 떡라면},
+    {name: '치즈라면', price: 3000, image: 치즈},
     {name: '만두라면', price: 3500, image: 만두},
     {name: '고기라면', price: 4000, image: 고기},
     {name: '김밥', price: 1500, image: 김밥},
@@ -24,6 +26,62 @@ const products = [
     {name: '참치김밥', price: 2500, image: 참치},
     {name: '스팸김밥', price: 3500, image: 스팸},
 ];
+
+function IdleIndecator({ setIdle, interactionTimer }) {
+  const [countdown, setCountdown] = useState(15);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const countdownTimer = setInterval(() => {
+      setCountdown((prev) => prev-1);
+    }, 1000);
+
+    return () => {
+      clearInterval(countdownTimer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (countdown === 0) onClick_cancel();
+  }, [countdown]);
+
+  function onClick_ok() {
+    clearTimeout(interactionTimer.current);
+    interactionTimer.current = setTimeout(() => {
+      setIdle(true);
+    });
+  }
+
+  function onClick_cancel() {
+    clearTimeout(interactionTimer.current);
+    setIdle(false);
+    navigate('/');
+  }
+
+  return (
+    <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
+      <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6 items-center justify-center text-xl">
+        <FiAlertCircle size={72} />
+        <div className="mt-4 mb-5">
+          아직 주문 중이시면 확인 버튼을 눌러주세요: {countdown}
+        </div>
+        <div className="flex w-full justify-around">
+          <button
+            className="bg-cyan-800 text-white rounded-full p-3 pl-5 pr-5"
+            onClick={onClick_ok}>
+            확인
+          </button>
+          <button
+            className="rounded-full border border-black p-3 pl-5 pr-5"
+            onClick={onClick_cancel}>
+            주문 취소
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function VoiceIndecator({ message }) {
   const constant_style = "transition h-12 w-screen fixed flex items-center pl-4 font-bold ";
@@ -65,39 +123,30 @@ function App() {
   const [ message, setMessage ] = useState("");
   const [ wsState, setWsState ] = useState({nfc: false, voice: false, product: false});
   const [ list, setList ] = useState([]);
+  const [ idle, setIdle ] = useState(false);
 
   const ws_voice = useRef(null);
   const ws_product = useRef(null);
   const ws_nfc = useRef(null);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const interactionTimer = useRef(0);
+
   useEffect(() => {
-    ws_nfc.current = new WebSocket(`ws://${window.location.host}/ws/nfc`);
-    
-    ws_nfc.current.onopen = () => {
-      console.log("NFC ws ready");
-      ws_nfc.current.send('connected');
+    if (location.pathname === '/') return;
 
-      setWsState((prev) => ({...prev, nfc: true}));
-    };
+    interactionTimer.current = setTimeout(() => {
+      setIdle(true);
+    }, 30000);
 
-    ws_nfc.current.onclose = () => {
-      console.log("NFC ws closed");
-
-      setWsState((prev) => ({...prev, nfc: false}));
-    };
-
-    ws_nfc.current.onerror = (error) => {
-      console.log(error.code, error.message);
-    };
-
-    ws_nfc.current.onmessage = (event) => {
-      console.log(event);
-    };
+    console.log("Idle timer started");
 
     return () => {
-      ws_nfc.current?.close();
+      clearTimeout(interactionTimer.current);
     };
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     ws_product.current?.send('cart:'+JSON.stringify(list));
@@ -121,7 +170,7 @@ function App() {
     };
 
     ws_product.current.onerror = (error) => {
-      console.log(error.code, error.message);
+      console.error(error.code, error.message);
     };
 
     ws_product.current.onmessage = (event) => {
@@ -214,11 +263,18 @@ function App() {
     setList((prev) => prev.filter((v) => v.id !== id))
   }
 
+  function reset() {
+    setList([]);
+    navigate('/');
+  }
+
   return (
     <div className="w-screen h-screen">
       <VoiceIndecator message={message} />
 
-      { !(wsState.nfc && wsState.product && wsState.voice ) &&
+      { idle && <IdleIndecator setIdle={setIdle} interactionTimer={interactionTimer} /> }
+
+      { !(wsState.nfc && wsState.product && wsState.voice ||  true) &&
         <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex text-white">
           <table className="w-full h-16">
             <tbody>
@@ -230,13 +286,14 @@ function App() {
         </div>
       }
 
-      <BrowserRouter>
-        <Routes>
+      <AnimatePresence>
+        <Routes location={location} key={location.pathname}>
           <Route exact path="/" element={<pages.Home />} />
           <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} removeItem={removeItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment products={products} updateItem={updateItem} removeItem={removeItem} list={list} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
+          <Route exact path="/vtuber" element={<pages.VTuber products={products} list={list} ws={ws_nfc} />} />
         </Routes>
-      </BrowserRouter>
+      </AnimatePresence>
     </div>
   );
 }
