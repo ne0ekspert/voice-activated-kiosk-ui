@@ -49,7 +49,7 @@ function IdleIndecator({ setIdle, interactionTimer }) {
   function onClick_ok() {
     clearTimeout(interactionTimer.current);
     interactionTimer.current = setTimeout(() => {
-      setIdle(true);
+      setIdle(false);
     });
   }
 
