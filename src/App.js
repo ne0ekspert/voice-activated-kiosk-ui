@@ -48,9 +48,10 @@ function IdleIndecator({ setIdle, interactionTimer }) {
 
   function onClick_ok() {
     clearTimeout(interactionTimer.current);
+    setIdle(false);
     interactionTimer.current = setTimeout(() => {
-      setIdle(false);
-    });
+      setIdle(true);
+    }, 30000);
   }
 
   function onClick_cancel() {
@@ -83,7 +84,7 @@ function IdleIndecator({ setIdle, interactionTimer }) {
   );
 }
 
-function VoiceIndecator({ message }) {
+function VoiceIndecator({ message, interactionTimer }) {
   const constant_style = "transition h-12 w-screen fixed flex items-center pl-4 font-bold ";
   let style = "";
 
@@ -138,7 +139,7 @@ function App() {
     if (location.pathname === '/') return;
 
     interactionTimer.current = setTimeout(() => {
-      setIdle(true);
+      //setIdle(true);
     }, 30000);
 
     console.log("Idle timer started");
@@ -245,13 +246,22 @@ function App() {
   }, []);
 
   function addItem(obj) {
-    obj.id = v4();
+    const item_to_add = list.find((v) => v.name === obj.name);
 
-    setList((prev) => [...prev, obj]);
+    if (item_to_add) {
+      setList((prev) => {
+        prev[item_to_add].count++;
+        return prev;
+      });
+    } else {
+      obj.id = v4();
+  
+      setList((prev) => [...prev, obj]);
+    }
   }
 
   function updateItem(id, obj) {
-    let updatedData = [...list];
+    let updatedData = list;
 
     list.forEach((v, i) => {
       if (v.id === id) updatedData[i] = { ...updatedData[i], ...obj };
