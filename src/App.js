@@ -159,7 +159,11 @@ function App() {
     
     ws_product.current.onopen = () => {
       console.log("Product ws ready");
-      ws_product.current.send('prod:'+JSON.stringify(products));
+      let data = {};
+      products.forEach((v) => {
+        data[v.name] = v.price;
+      });
+      ws_product.current.send('prod:'+JSON.stringify(data));
 
       setWsState((prev) => ({...prev, product: true}));
     };
