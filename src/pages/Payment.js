@@ -22,9 +22,9 @@ function PaymentOverlay({ method, setPaymentMethod, reset }) {
             console.error(error.code, error.message);
         };
 
-        ws_nfc.current.onmessage = (data) => {
-            console.log(data);
-            setCardData(data);
+        ws_nfc.current.onmessage = (event) => {
+            console.log(event);
+            setCardData(event.data);
         };
 
         return () => {
