@@ -284,6 +284,7 @@ function App() {
         <Routes location={location} key={location.pathname}>
           <Route exact path="/" element={<pages.Home />} />
           <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} removeItem={removeItem} list={list} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
           <Route path="/payment/:method" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
         </Routes>
       </AnimatePresence>

@@ -36,24 +36,45 @@ function PaymentOverlay({ reset }) {
         };
     }, []);
 
+    function card_mask(card_number) {
+        return card_number.slice(0, 9) + "********";
+    }
+
     switch (params.method) {
         case "card":
-            return (
-                <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
-                    <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
-                        <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이</nav>
-                        <div className="w-full text-xl">
-                            학생증을 리더기에 대주세요: {cardData}
+            if (cardData === "") {
+                return (
+                    <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
+                        <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
+                            <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이 - 결제 대기</nav>
+                            <div className="w-full text-xl">
+                                학생증을 리더기에 대주세요: {cardData}
+                            </div>
+                            <div className="grow"></div>
+                            <div className="w-full flex justify-end">
+                                <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={() => navigate('/payment')}>
+                                    취소
+                                </button>
+                            </div>
                         </div>
-                        <div className="grow"></div>
+                    </div>
+                );
+            } else {
+                <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
+                    <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2" p-6>
+                        <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이 - 결제 완료</nav>
+                        <div className="w-full text-xl">
+                            결제가 완료되었습니다! 결제 ID: {card_mask(cardData)}
+                        </div>
                         <div className="w-full flex justify-end">
-                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={() => navigate('/payment')}>
-                                취소
+                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
+                                확인
                             </button>
                         </div>
                     </div>
                 </div>
-            );
+            }
+            break;
         case "cash":
             return (
                 <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
