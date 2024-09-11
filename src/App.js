@@ -232,10 +232,11 @@ function App() {
     const item_to_add = list.find((v) => v.name === obj.name);
 
     if (item_to_add) {
-      setList((prev) => {
-        prev[item_to_add].count++;
-        return prev;
-      });
+      setList(prev => {
+          return prev.map(item => 
+            item.name === obj.name ? {...item, count: item.count + 1} : item
+          );
+        });
     } else {
       obj.id = v4();
   
