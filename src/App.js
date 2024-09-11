@@ -179,7 +179,16 @@ function App() {
     };
 
     ws_product.current.onmessage = (event) => {
-      console.log(event);
+      if (event.data.startsWith("scrn:")) {
+        const screen_id = event.data.slice(5);
+
+        navigate(screen_id);
+      } else if (event.data.startsWith("cart:")) {
+        const cart_str = event.data.slice(5);
+        const cart_data = JSON.parse(cart_str);
+
+        setList(cart_data);
+      }
     };
 
     return () => {
@@ -188,18 +197,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    function findItems(text) {
-      const regex = /<(.+?)>/gi; // Same regex as before
-      const textElements = [];
-      let match;
-
-      while ((match = regex.exec(text)) !== null) {
-        textElements.push(match[1]);
-      }
-
-      return textElements;
-    }
-
     ws_voice.current = new WebSocket(`ws://${window.location.host}/ws/voice`);
 
     ws_voice.current.onopen = () => {
@@ -224,24 +221,6 @@ function App() {
       let m = event.data;
       
       setMessage(m);
-
-      if (m.startsWith('RES:')) {
-        const text = m.slice(4);
-        const items = findItems(text);
-
-        console.log(items);
-
-        items.forEach((v) => {
-          if (v.startsWith('!')) {
-            console.log(v.slice(1));
-            removeItem(v.slice(1));
-          } else {
-            const [name, count] = v.split(':');
-
-            addItem({name: name, count: count});
-          }
-        });
-      }
     };
 
     return () => {
@@ -279,6 +258,7 @@ function App() {
 
   function reset() {
     setList([]);
+    ws_product.current.send('RESET');
     navigate('/');
   }
 
@@ -304,8 +284,7 @@ function App() {
         <Routes location={location} key={location.pathname}>
           <Route exact path="/" element={<pages.Home />} />
           <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} removeItem={removeItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
-          <Route exact path="/vtuber" element={<pages.VTuber products={products} list={list} ws={ws_nfc} />} />
+          <Route path="/payment/:method" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
         </Routes>
       </AnimatePresence>
     </div>

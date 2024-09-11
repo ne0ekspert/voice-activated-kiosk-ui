@@ -1,11 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import { FaCreditCard, FaMoneyBillAlt } from "react-icons/fa"; 
 import { motion } from "framer-motion";
+import { useNavigate, useParams } from "react-router-dom";
 
-function PaymentOverlay({ method, setPaymentMethod, reset }) {
+function PaymentOverlay({ reset }) {
     const [ cardData, setCardData ] = useState("");
 
     const ws_nfc = useRef();
+
+    const navigate = useNavigate();
+    const params = useParams();
 
     useEffect(() => {
         ws_nfc.current = new WebSocket(`ws://${window.location.host}/ws/nfc`);
@@ -32,7 +36,7 @@ function PaymentOverlay({ method, setPaymentMethod, reset }) {
         };
     }, []);
 
-    switch (method) {
+    switch (params.method) {
         case "card":
             return (
                 <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
@@ -43,7 +47,7 @@ function PaymentOverlay({ method, setPaymentMethod, reset }) {
                         </div>
                         <div className="grow"></div>
                         <div className="w-full flex justify-end">
-                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={() => setPaymentMethod('')}>
+                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={() => navigate('/payment')}>
                                 취소
                             </button>
                         </div>
@@ -78,7 +82,8 @@ function PaymentOverlay({ method, setPaymentMethod, reset }) {
 
 function Payment({ list, products, removeItem, ws_nfc, reset }) {
     const [ totalPrice, setTotalPrice ] = useState(0);
-    const [ paymentMethod, setPaymentMethod ] = useState("");
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         let total = 0;
@@ -131,19 +136,19 @@ function Payment({ list, products, removeItem, ws_nfc, reset }) {
 
                 <div className="mt-32 mr-auto ml-auto">
                     <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6"
-                            onClick={() => setPaymentMethod("card")}>
+                            onClick={() => navigate("/payment/card")}>
                         <FaCreditCard className="ml-auto mr-auto" size={72} />
                         카드결제
                     </button>
                     <button className="bg-white text-blue-800 text-3xl rounded-lg p-6 m-6"
-                            onClick={() => setPaymentMethod("cash")}>
+                            onClick={() => navigate("/payment/cash")}>
                         <FaMoneyBillAlt className="ml-auto mr-auto" size={72} />
                         현금결제
                     </button>
                 </div>
             </div>
 
-            <PaymentOverlay method={paymentMethod} setPaymentMethod={setPaymentMethod} ws={ws_nfc} reset={reset} />
+            <PaymentOverlay ws={ws_nfc} reset={reset} />
         </motion.div>
     );
 }
