@@ -15,17 +15,17 @@ function Item({ item, addItem }) {
 }
 
 function CartItem({ item, products, updateItem, removeItem }) {
-    const product = products.filter((v) => item.name === v.name)[0];
+    const product = products.filter((v) => item[0] === v.name)[0];
 
     function increase() {
-        updateItem(item.id, { count: ++item.count });
+        updateItem(item[0], ++item[1]);
     }
 
     function decrease() {
         if (item.count <= 1)
             return;
 
-        updateItem(item.id, { count: --item.count });
+        updateItem(item[0], --item[1]);
     }
 
     return (
@@ -33,15 +33,15 @@ function CartItem({ item, products, updateItem, removeItem }) {
             <div className="flex flex-col bg-white h-full w-full text-black p-3">
                 <div className="flex flex-row justify-between text-lg">
                     <span>{product.name}</span>
-                    <span>{product.price * item.count}원</span>
+                    <span>{product.price * item[1]}원</span>
                 </div>
                 <div className="flex flex-row justify-evenly border-t border-b border-gray-700 text-center">
                     <div className="h-8 w-8 cursor-pointer" onClick={decrease}>-</div>
-                    <div className="grow">{item.count}</div>
+                    <div className="grow">{item[1]}</div>
                     <div className="h-8 w-8 cursor-pointer" onClick={increase}>+</div>
                 </div>
                 <div className="grow"></div>
-                <button className="text-red-600" onClick={() => removeItem(item.id)}>주문 취소</button>
+                <button className="text-red-600" onClick={() => removeItem(item[0])}>주문 취소</button>
             </div>
         </div>
     );
@@ -53,9 +53,9 @@ function Order(props) {
     useEffect(() => {
         let t = 0;
 
-        props.list.forEach((v) => {
-            const product = props.products.filter((p) => v.name === p.name)[0];
-            t += product.price * v.count;
+        Object.entries(props.list).forEach((v) => {
+            const product = props.products.filter((p) => v[0] === p.name)[0];
+            t += product.price * v[1];
         });
 
         setTotal(t);
@@ -71,9 +71,9 @@ function Order(props) {
             .
             <div className="fixed bottom-0 bg-slate-800 text-white h-1/4 flex flex-row w-screen">
                 <div className="flex flex-row overflow-x-scroll overflow-y-hidden grow">
-                    {props.list.length === 0 ?
+                    {Object.keys(props.list).length === 0 ?
                     (<span className="m-auto text-5xl font-bold opacity-30">장바구니에 음식을 추가해주세요</span>)
-                    : props.list.map((v, i) => 
+                    : Object.entries(props.list).map((v, i) => 
                         <CartItem item={v} key={i} products={props.products} updateItem={props.updateItem} removeItem={props.removeItem} />
                     )}
                 </div>

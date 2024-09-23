@@ -108,9 +108,9 @@ function Payment({ list, products, removeItem, ws_nfc, reset }) {
 
     useEffect(() => {
         let total = 0;
-        list.forEach((v) => {
-            const price = products.filter((p) => p.name === v.name)[0].price;
-            const count = v.count;
+        Object.entries(list).forEach((v) => {
+            const price = products.filter((p) => p.name === v[0])[0].price;
+            const count = v[1];
 
             total += price * count;
         });
@@ -133,11 +133,11 @@ function Payment({ list, products, removeItem, ws_nfc, reset }) {
                     </thead>
                     <tbody className="text-center">
                         {
-                            list.map((v, i) => 
+                            Object.entries(list).map((v, i) => 
                                 <tr className="h-12 border-t border-gray-800" key={i}>
-                                    <td>{v.name}</td>
-                                    <td>{v.count}</td>
-                                    <td>{products.filter((p) => p.name === v.name)[0].price * v.count}</td>
+                                    <td>{v[0]}</td>
+                                    <td>{v[1]}</td>
+                                    <td>{products.filter((p) => p.name === v[0])[0].price * v[1]}</td>
                                     <td onClick={() => removeItem(v.id)} className="text-red-600 font-bold">X</td>
                                 </tr>
                             )

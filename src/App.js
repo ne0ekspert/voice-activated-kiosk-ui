@@ -2,7 +2,6 @@ import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from 'framer-motion';
 import * as pages from "./pages";
-import { v4 } from "uuid";
 import { FiAlertCircle } from "react-icons/fi";
 
 import "./App.css";
@@ -123,7 +122,7 @@ function VoiceIndecator({ message, interactionTimer }) {
 function App() {
   const [ message, setMessage ] = useState("");
   const [ wsState, setWsState ] = useState({nfc: false, voice: false, product: false});
-  const [ list, setList ] = useState([]);
+  const [ list, setList ] = useState({});
   const [ idle, setIdle ] = useState(false);
 
   const ws_voice = useRef(null);
@@ -207,7 +206,7 @@ function App() {
     };
 
     ws_voice.current.onclose = () => {
-      console.log("WS 닫힘");
+      console.log("Voice WS 닫힘");
 
       setWsState((prev) => ({...prev, voice: false}));
     };
@@ -219,6 +218,13 @@ function App() {
     ws_voice.current.onmessage = (event) => {
       console.log(event);
       let m = event.data;
+
+      if (m.startsWith('CART:')) {
+        const cart_str = event.data.slice(5);
+        const cart_data = JSON.parse(cart_str);
+
+        setList(cart_data);
+      }
       
       setMessage(m);
     };
@@ -229,31 +235,22 @@ function App() {
   }, []);
 
   function addItem(obj) {
-    const item_to_add = list.find((v) => v.name === obj.name);
-
-    if (item_to_add) {
-      setList((prev) => {
-        prev[item_to_add].count++;
-        return prev;
-      });
+    if (Object.keys(list).includes(obj.name)) {
+      setList(prev => ({[obj.name]: prev[obj.name]+obj.count}));
     } else {
-      obj.id = v4();
-  
-      setList((prev) => [...prev, obj]);
+      setList((prev) => ({...prev, [obj.name]: obj.count}));
     }
   }
 
-  function updateItem(id, obj) {
-    let updatedData = list;
-
-    list.forEach((v, i) => {
-      if (v.id === id) updatedData[i] = { ...updatedData[i], ...obj };
-      setList(updatedData);
-    });
+  function updateItem(name, count) {
+    setList(prev => ({[name]: count, ...prev}));
   }
 
-  function removeItem(id) {
-    setList((prev) => prev.filter((v) => v.id !== id))
+  function removeItem(name) {
+    setList((prev) => {
+      delete prev[name];
+      return prev;
+    });
   }
 
   function reset() {
