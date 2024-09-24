@@ -236,7 +236,7 @@ function App() {
 
   function addItem(obj) {
     if (Object.keys(list).includes(obj.name)) {
-      setList(prev => ({[obj.name]: prev[obj.name]+obj.count}));
+      setList(prev => ({...prev, [obj.name]: prev[obj.name]+obj.count}));
     } else {
       setList((prev) => ({...prev, [obj.name]: obj.count}));
     }
