@@ -154,6 +154,11 @@ function App() {
   }, [list]);
 
   useEffect(() => {
+    ws_product.current?.send('disp:'+location.pathname);
+    console.log("Path data sent");
+  }, [location.pathname]);
+
+  useEffect(() => {
     ws_product.current = new WebSocket(`ws://${window.location.host}/ws/prod`);
     
     ws_product.current.onopen = () => {
