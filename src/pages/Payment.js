@@ -62,7 +62,7 @@ function PaymentOverlay({ reset }) {
             } else {
                 return (
                     <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
-                        <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2" p-6>
+                        <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
                             <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이 - 결제 완료</nav>
                             <div className="w-full text-xl">
                                 결제가 완료되었습니다! 결제 ID: {card_mask(cardData)}

@@ -103,6 +103,7 @@ function VoiceIndecator({ message, interactionTimer }) {
     style = "bg-white text-cyan-800";
   } else if (message.startsWith('RES:')) {
     message = message.slice(4);
+    style = "bg-white text-cyan-800"
   }
 
   style = constant_style + style;
