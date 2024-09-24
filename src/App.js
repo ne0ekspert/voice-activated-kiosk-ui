@@ -127,7 +127,6 @@ function App() {
 
   const ws_voice = useRef(null);
   const ws_product = useRef(null);
-  const ws_nfc = useRef(null);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -230,8 +229,11 @@ function App() {
 
         setList(cart_data);
       }
-      
-      setMessage(m);
+      if (m.startsWith('RES:')) {
+        const response_str = event.data.slice(4);
+
+        setMessage(response_str);
+      }
     };
 
     return () => {
@@ -286,8 +288,8 @@ function App() {
         <Routes location={location} key={location.pathname}>
           <Route exact path="/" element={<pages.Home />} />
           <Route exact path="/order" element={<pages.Order products={products} addItem={addItem} updateItem={updateItem} removeItem={removeItem} list={list} />} />
-          <Route exact path="/payment" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
-          <Route path="/payment/:method" element={<pages.Payment products={products} removeItem={removeItem} list={list} ws_nfc={ws_nfc} reset={reset} />} />
+          <Route exact path="/payment" element={<pages.Payment products={products} removeItem={removeItem} list={list} reset={reset} />} />
+          <Route path="/payment/:method" element={<pages.Payment products={products} removeItem={removeItem} list={list} reset={reset} />} />
         </Routes>
       </AnimatePresence>
     </div>

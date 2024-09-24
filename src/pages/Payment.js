@@ -60,19 +60,21 @@ function PaymentOverlay({ reset }) {
                     </div>
                 );
             } else {
-                <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
-                    <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2" p-6>
-                        <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이 - 결제 완료</nav>
-                        <div className="w-full text-xl">
-                            결제가 완료되었습니다! 결제 ID: {card_mask(cardData)}
-                        </div>
-                        <div className="w-full flex justify-end">
-                            <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
-                                확인
-                            </button>
+                return (
+                    <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
+                        <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2" p-6>
+                            <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이 - 결제 완료</nav>
+                            <div className="w-full text-xl">
+                                결제가 완료되었습니다! 결제 ID: {card_mask(cardData)}
+                            </div>
+                            <div className="w-full flex justify-end">
+                                <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
+                                    확인
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                );
             }
             break;
         case "cash":
@@ -169,7 +171,7 @@ function Payment({ list, products, removeItem, ws_nfc, reset }) {
                 </div>
             </div>
 
-            <PaymentOverlay ws={ws_nfc} reset={reset} />
+            <PaymentOverlay reset={reset} />
         </motion.div>
     );
 }
