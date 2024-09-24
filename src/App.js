@@ -102,12 +102,7 @@ function VoiceIndecator({ message, interactionTimer }) {
     message = message.slice(6);
     style = "bg-white text-cyan-800";
   } else if (message.startsWith('RES:')) {
-    if (message.includes('## 대답')) {
-      message = message.split('## 대답')[1].trim();
-    } else {
-      message = "";
-    }
-    style = "bg-cyan-800 text-white";
+    message = message.slice(4);
   }
 
   style = constant_style + style;
@@ -228,11 +223,8 @@ function App() {
         const cart_data = JSON.parse(cart_str);
 
         setList(cart_data);
-      }
-      if (m.startsWith('RES:')) {
-        const response_str = event.data.slice(4);
-
-        setMessage(response_str);
+      } else {
+        setMessage(m);
       }
     };
 
