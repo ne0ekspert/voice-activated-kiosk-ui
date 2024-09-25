@@ -257,6 +257,7 @@ function App() {
     setList([]);
     ws_product.current.send('RESET');
     navigate('/');
+    window.location.reload();
   }
 
   return (
@@ -265,7 +266,7 @@ function App() {
 
       { idle && <IdleIndecator setIdle={setIdle} interactionTimer={interactionTimer} /> }
 
-      { !(wsState.nfc && wsState.product && wsState.voice ||  true) &&
+      { !(wsState.nfc && wsState.product && wsState.voice || true) &&
         <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex text-white">
           <table className="w-full h-16">
             <tbody>
