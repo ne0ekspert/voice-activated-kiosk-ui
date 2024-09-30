@@ -254,7 +254,7 @@ function App() {
   }
 
   function reset() {
-    setList([]);
+    setList({});
     ws_product.current.send('RESET');
     navigate('/');
     window.location.reload();
