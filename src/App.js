@@ -260,14 +260,18 @@ function App() {
     window.location.reload();
   }
 
+  function reload() {
+    window.location.reload();
+  }
+
   return (
     <div className="w-screen h-screen">
       <VoiceIndecator message={message} />
 
       { idle && <IdleIndecator setIdle={setIdle} interactionTimer={interactionTimer} /> }
 
-      { !(wsState.nfc && wsState.product && wsState.voice || true) &&
-        <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex text-white">
+      { !(wsState.nfc && wsState.product && wsState.voice) &&
+        <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex flex-row text-white">
           <table className="w-full h-16">
             <tbody>
               <tr><th>NFC 상태</th><td>{wsState.nfc ? 'SUCCESS' : 'FAILED'}</td></tr>
@@ -275,6 +279,7 @@ function App() {
               <tr><th>음성 인식</th><td>{wsState.voice ? 'SUCCESS' : 'FAILED'}</td></tr>
             </tbody>
           </table>
+          <button onClick={reload}>재시작</button>
         </div>
       }
 
