@@ -76,7 +76,6 @@ function PaymentOverlay({ reset }) {
                     </div>
                 );
             }
-            break;
         case "cash":
             return (
                 <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
