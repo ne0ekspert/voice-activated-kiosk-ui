@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 function PaymentOverlay({ reset }) {
     const [ cardData, setCardData ] = useState("");
-    const [ countdown, setCountdown ] = useState(5);
+    const [ countdown, setCountdown ] = useState(10);
 
     const interval = useRef();
 
