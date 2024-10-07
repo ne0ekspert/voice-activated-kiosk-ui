@@ -5,6 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 
 function PaymentOverlay({ reset }) {
     const [ cardData, setCardData ] = useState("");
+    const [ countdown, setCountdown ] = useState(5);
+
+    const interval = useRef();
 
     const ws_nfc = useRef();
 
@@ -32,9 +35,17 @@ function PaymentOverlay({ reset }) {
         };
 
         return () => {
+            clearInterval(interval.current);
             ws_nfc.current?.close();
         };
     }, []);
+
+    useEffect(() => {
+        if (countdown == 0) {
+            clearInterval(interval.current);
+            reset();
+        }
+    }, [countdown]);
 
     function card_mask(card_number) {
         return card_number.slice(0, 9) + "********";
@@ -60,6 +71,11 @@ function PaymentOverlay({ reset }) {
                     </div>
                 );
             } else {
+                clearInterval(interval.current);
+                interval.current = setInterval(() => {
+                    setCountdown(prev => prev-1);
+                }, 1000);
+
                 return (
                     <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
                         <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
@@ -69,7 +85,7 @@ function PaymentOverlay({ reset }) {
                             </div>
                             <div className="w-full flex justify-end">
                                 <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
-                                    확인
+                                    확인 ({countdown})
                                 </button>
                             </div>
                         </div>
@@ -77,6 +93,11 @@ function PaymentOverlay({ reset }) {
                 );
             }
         case "cash":
+            clearInterval(interval.current);
+            interval.current = setInterval(() => {
+                setCountdown(prev => prev-1);
+            }, 1000);
+
             return (
                 <div className="fixed flex top-12 h-screen w-screen bg-opacity-80 bg-black items-center justify-center">
                     <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
@@ -87,7 +108,7 @@ function PaymentOverlay({ reset }) {
                         <div className="grow"></div>
                         <div className="w-full flex justify-end">
                             <button className="border-2 border-cyan-500 pt-3 pb-3 pr-6 pl-6 rounded-lg" onClick={reset}>
-                                확인
+                                확인 ({countdown})
                             </button>
                         </div>
                     </div>
@@ -102,7 +123,7 @@ function PaymentOverlay({ reset }) {
     }
 }
 
-function Payment({ list, products, removeItem, ws_nfc, reset }) {
+function Payment({ list, products, removeItem, reset }) {
     const [ totalPrice, setTotalPrice ] = useState(0);
 
     const navigate = useNavigate();
