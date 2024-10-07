@@ -271,7 +271,7 @@ function App() {
       { idle && <IdleIndecator setIdle={setIdle} interactionTimer={interactionTimer} /> }
 
       { !(wsState.nfc && wsState.product && wsState.voice) &&
-        <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex flex-row text-white">
+        <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex flex-col text-white">
           <table className="w-full h-16">
             <tbody>
               <tr><th>NFC 상태</th><td>{wsState.nfc ? 'SUCCESS' : 'FAILED'}</td></tr>
