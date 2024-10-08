@@ -16,16 +16,21 @@ function Item({ item, addItem }) {
 
 function CartItem({ item, products, updateItem, removeItem }) {
     const product = products.filter((v) => item[0] === v.name)[0];
+    console.log(item);
 
     function increase() {
-        updateItem(item[0], ++item[1]);
+        console.log(item);
+
+        updateItem(item[0], item[1] + 1);
     }
 
     function decrease() {
-        if (item.count <= 1)
+        console.log(item);
+
+        if (item[1]<= 1)
             return;
 
-        updateItem(item[0], --item[1]);
+        updateItem(item[0], item[1] - 1);
     }
 
     return (

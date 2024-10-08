@@ -243,7 +243,10 @@ function App() {
   }
 
   function updateItem(name, count) {
-    setList(prev => ({[name]: count, ...prev}));
+    setList(prev => ({
+      ...prev,
+      [name]: count
+    }));
   }
 
   function removeItem(name) {
@@ -270,7 +273,7 @@ function App() {
 
       { idle && <IdleIndecator setIdle={setIdle} interactionTimer={interactionTimer} /> }
 
-      { !(wsState.product && wsState.voice) &&
+      { !(wsState.product && wsState.voice) && false &&
         <div className="fixed w-screen h-screen bg-opacity-80 bg-black flex flex-col text-white">
           <table className="w-full h-16">
             <tbody>

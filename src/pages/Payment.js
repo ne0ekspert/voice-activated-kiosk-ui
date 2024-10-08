@@ -41,7 +41,7 @@ function PaymentOverlay({ reset }) {
     }, []);
 
     useEffect(() => {
-        if (countdown == 0) {
+        if (countdown === 0) {
             clearInterval(interval.current);
             reset();
         }
@@ -103,7 +103,7 @@ function PaymentOverlay({ reset }) {
                     <div className="flex flex-col bg-white rounded-lg h-1/2 w-1/2 p-6">
                         <nav className="border-b border-gray-700 w-9/12 text-3xl mb-8">BMT페이</nav>
                         <div className="w-full text-xl">
-                            주문이 접수되었습니다. 결제는 카운터에서 진행해주세요.
+                            직원이 호출되었습니다. 현금 결제를 진행해주세요. 
                         </div>
                         <div className="grow"></div>
                         <div className="w-full flex justify-end">
