@@ -83,7 +83,7 @@ function Order(props) {
                     )}
                 </div>
                 <Link to='/payment'>
-                    <div className="flex flex-col justify-center aspect-square h-full">
+                    <div className={"flex flex-col justify-center h-full transition overflow-hidden aspect-square " + (Object.keys(props.list).length > 0 ? "" : "translate-x-full")}>
                         <button className="flex flex-col items-center justify-center bg-white h-full text-slate-800 text-4xl font-bold">
                             <h1>{total}원</h1>
                             <div className="flex flex-row justify-center">
