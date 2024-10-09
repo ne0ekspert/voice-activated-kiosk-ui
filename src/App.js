@@ -251,8 +251,9 @@ function App() {
 
   function removeItem(name) {
     setList((prev) => {
-      delete prev[name];
-      return prev;
+      const newList = { ...prev };
+      delete newList[name];
+      return newList;
     });
   }
 
@@ -260,7 +261,6 @@ function App() {
     setList({});
     ws_product.current.send('RESET');
     navigate('/');
-    window.location.reload();
   }
 
   function reload() {
