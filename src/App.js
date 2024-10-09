@@ -259,6 +259,7 @@ function App() {
 
   function reset() {
     setList({});
+    setMessage("");
     ws_product.current.send('RESET');
     navigate('/');
   }
