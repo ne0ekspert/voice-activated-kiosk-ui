@@ -262,6 +262,7 @@ function App() {
     setMessage("");
     ws_product.current.send('RESET');
     navigate('/');
+    window.location.reload();
   }
 
   function reload() {
